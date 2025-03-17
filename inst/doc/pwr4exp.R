@@ -1,60 +1,112 @@
-## ----include = FALSE----------------------------------------------------------
+## ----include = FALSE, message=FALSE-------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
 library(pwr4exp)
+
+## -----------------------------------------------------------------------------
+ df1 <- expand.grid(
+   fA = factor(1:2), # factor A with 2 levels
+   fB = factor(1:2), # factor B with 2 levels
+   fC = factor(1:3), # factor C with 3 levels
+   fD = factor(1:3), # factor D with 3 levels
+   subject = factor(1:10)  # 10 subjects
+ )
+ df1$x <- rnorm(nrow(df1))  # Numerical variable x
+ df1$z <- rnorm(nrow(df1))  # Numerical variable z
+
+## -----------------------------------------------------------------------------
+mkdesign( ~ fA * fB + x, df1)$fixeff$beta
+
+## -----------------------------------------------------------------------------
+mkdesign(~ fA + fB, df1, template = TRUE)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ fA * fB * fC, df1)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ x + z, df1)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ x * z, df1)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ fA * x, df1)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ fA * fB * fC + fD * x + z, df1)$fixeff$means
+
+## -----------------------------------------------------------------------------
+mkdesign(~ fA * fB * fC * fD + (1 + fA | subject), df1)$varcov
 
 ## -----------------------------------------------------------------------------
 crd <- designCRD(
   treatments = 4,
   replicates = 8,
-  beta = c(35, -5, 2, 3),
+  means = c(35, 30, 37, 38),
   sigma2 = 15
 )
 
 ## -----------------------------------------------------------------------------
-pwr.anova(design = crd)
+pwr.anova(crd)
 
 ## -----------------------------------------------------------------------------
-pwr.contrast(design = crd, specs =  ~ trt, method = "trt.vs.ctrl")
+pwr.contrast(crd, which =  "trt", contrast = "pairwise")
 
 ## -----------------------------------------------------------------------------
-pwr.contrast(design = crd, specs =  ~ trt, method = "poly")
+pwr.contrast(crd, which =  "trt", contrast = "poly")
+
+## -----------------------------------------------------------------------------
+pwr.contrast(crd, which =  "trt", contrast = "trt.vs.ctrl")
+
+## -----------------------------------------------------------------------------
+pwr.contrast(crd, which =  "trt", contrast = list(trts.vs.ctrl = c(-1, 1/3, 1/3, 1/3)))
+
+## -----------------------------------------------------------------------------
+pwr.contrast(crd, which =  "trt", contrast = "pairwise", sig.level = 0.01)
+
+## -----------------------------------------------------------------------------
+pwr.contrast(crd, which =  "trt", contrast = "pairwise", sig.level = 0.05, p.adj = TRUE)
+
+## -----------------------------------------------------------------------------
+designRCBD(treatments = c(2, 2), blocks = 8, template = TRUE)
 
 ## -----------------------------------------------------------------------------
 rcbd <- designRCBD(
   treatments = c(2, 2),
   blocks = 8,
-  beta = c(35, 5, 3, -2),
-  VarCov = 11,
+  # beta = c(35, 5, 3, -2), # identical to means
+  means = c(35, 40, 38, 41),
+  vcomp = 11,
   sigma2 = 4
 )
 
 ## -----------------------------------------------------------------------------
-pwr.anova(design = rcbd)
+unique(rcbd$deStruct$fxTrms$fixedfr)
+rcbd$deStruct$formula
 
 ## -----------------------------------------------------------------------------
-# across all levels of facB
-pwr.contrast(design = rcbd, specs = ~ "facA", method = "pairwise")
-# at each level of facB
-pwr.contrast(design = rcbd, specs = ~ facA|facB, method = "pairwise")
+designRCBD(treatments = c(2, 2), 
+           label = list(factorA = c("A1", "A2"), factorB = c("B1", "B2")), 
+           blocks = 8, 
+           formula = ~ factorA + factorB + (1|block), 
+           template = TRUE)
 
 ## -----------------------------------------------------------------------------
-rcbd_quote <- quote(
-  designRCBD(
+pwr.anova(rcbd)
+
+## -----------------------------------------------------------------------------
+pwr.contrast(rcbd, which = "facA", by = "facB")
+
+## -----------------------------------------------------------------------------
+designLSD(
   treatments = c(2, 2),
-  blocks = n,
-  beta = c(35, 5, 3, -2),
-  VarCov = 11,
-  sigma2 = 4
-  )
+  squares = 4,
+  reuse = "both",
+  template = TRUE
 )
-
-## -----------------------------------------------------------------------------
-find_sample_size(design.quote = rcbd_quote, n_init = 2, n_max = 99)
 
 ## -----------------------------------------------------------------------------
 lsd <- designLSD(
@@ -62,92 +114,63 @@ lsd <- designLSD(
   label = list(temp = c("T1", "T2"), dosage = c("D1", "D2")),
   squares = 4,
   reuse = "both",
-  beta = c(35, 5, 3, -2),
-  VarCov = list(11, 2),
+  means = c(35, 40, 38, 41),
+  vcomp = c(11, 2),
   sigma2 = 2
 )
 
 ## -----------------------------------------------------------------------------
-pwr.anova(design = lsd)
-
-## -----------------------------------------------------------------------------
-# the effect of dosage across all levels of temp
-pwr.contrast(design = lsd, specs = ~ "dosage", method = "pairwise")
-# the effect of dosage at each level of temp
-pwr.contrast(design = lsd, specs = ~ dosage|temp, method = "pairwise")
-
-## -----------------------------------------------------------------------------
-lsd_quote <- quote(
-  designLSD(
-  treatments = c(2, 2),
-  squares = n,
-  reuse = "both",
-  beta = c(35, 5, 3, -2),
-  VarCov = list(11, 2),
-  sigma2 = 2
-  )
+designSPD(
+  trt.main = 2,
+  trt.sub = 3, 
+  replicates = 10, 
+  template = TRUE
 )
-
-## -----------------------------------------------------------------------------
-find_sample_size(design.quote = lsd_quote, n_init = 2, n_max = 99)
 
 ## -----------------------------------------------------------------------------
 spd <- designSPD(
   trt.main = 2,
   trt.sub = 3, 
   replicates = 10, 
-  label = list(Main = c("Main1", "Main2"), Sub = c("Sub1", "Sub2", "Sub3")),
-  beta = c(20, 2, 2, 4, 0, 2),
-  VarCov = list(4),
+  means = c(20, 22, 22, 24, 24, 28),
+  vcomp = 4,
   sigma2 = 11
 )
 
 ## -----------------------------------------------------------------------------
-pwr.anova(spd)
+n_subject = 6 # Subjects per treatment
+n_trt = 3 # Number of treatments
+n_hour = 8 # Number of repeated measures (time points)
+trt = c("CON", "TRT1", "TRT2")
 
-## -----------------------------------------------------------------------------
-pwr.contrast(design = spd, specs = ~ Sub|Main, method = "trt.vs.ctrl")
-
-## -----------------------------------------------------------------------------
-df_spd_cod <- pwr4exp:::df.cod(
-  treatments = c(2, 2),
-  squares = 4
-)
-## Create main plot factor, i.e., breed
-df_spd_cod$Breed <- rep(c("1", "2"), each = 32)
-
-## Check data structure
-head(df_spd_cod, n = 4); tail(df_spd_cod, n = 4)
-
-## -----------------------------------------------------------------------------
-formula <- y ~ Breed*facA*facB + (1|subject) + (1|period)
-
-## -----------------------------------------------------------------------------
-beta = c(
-  `(Intercept)` = 35,        # Baseline (mean of Breed1_A1_B1)
-  Breed2 = -5,           # Effect of the second breed alone
-  facA2 = -5,               # Effect of A2 alone
-  facB2 = 1,                # Effect of B2 alone
-  `Breed2:facA2` = 1,         # Interaction between Breed2 and A2
-  `Breed2:facB2` = 0,         # Interaction between Breed2 and B2
-  `facA2:facB2` = 2,             # Interaction between A2 and B2
-  `Breed2:facA2:facB2` = 1       # Three-way interaction between Breed2, A2, and B2
-)
-
-
-## -----------------------------------------------------------------------------
-SPD_COD <- designCustom(
-  design.df = df_spd_cod,
-  formula = formula,
-  beta = beta,
-  VarCov = list(7, 4),
-  sigma2 = 4,
-  design.name = "hybrid SPD COD"
+df.rep <- data.frame(
+  subject = as.factor(rep(seq_len(n_trt*n_subject), each = n_hour)),
+  hour = as.factor(rep(seq_len(n_hour), n_subject*n_trt)),
+  trt = rep(trt, each = n_subject*n_hour)
 )
 
 ## -----------------------------------------------------------------------------
-pwr.anova(SPD_COD)
+mkdesign(formula = ~ trt*hour, data = df.rep)
 
 ## -----------------------------------------------------------------------------
-pwr.contrast(SPD_COD, ~facA|facB|Breed, "pairwise")
+design.rep <- mkdesign(
+formula = ~ trt*hour,
+data = df.rep,
+means =  c(1, 2.50, 3.5,
+           1, 3.50, 4.54,
+           1, 3.98, 5.80,
+           1, 4.03, 5.4,
+           1, 3.68, 5.49,
+           1, 3.35, 4.71,
+           1, 3.02, 4.08,
+           1, 2.94, 3.78),
+sigma2 = 2,
+correlation = corAR1(value = 0.6, form = ~ hour|subject)
+)
+
+## -----------------------------------------------------------------------------
+pwr.anova(design.rep)
+
+## -----------------------------------------------------------------------------
+pwr.contrast(design.rep, which = "trt", by = "hour", contrast = "trt.vs.ctrl", p.adj = TRUE)[1:2]
 
