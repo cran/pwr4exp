@@ -104,7 +104,7 @@ pwr.contrast(rcbd, which = "facA", by = "facB")
 designLSD(
   treatments = c(2, 2),
   squares = 4,
-  reuse = "both",
+  reuse = "none",
   template = TRUE
 )
 
@@ -113,7 +113,7 @@ lsd <- designLSD(
   treatments = c(2, 2),
   label = list(temp = c("T1", "T2"), dosage = c("D1", "D2")),
   squares = 4,
-  reuse = "both",
+  reuse = "none",
   means = c(35, 40, 38, 41),
   vcomp = c(11, 2),
   sigma2 = 2

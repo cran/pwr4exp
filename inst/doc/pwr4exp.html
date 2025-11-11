@@ -10,9 +10,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="R Package Version 1.0.0" />
+<meta name="author" content="R Package Version 1.0.1" />
 
-<meta name="date" content="2025-03-17" />
+<meta name="date" content="2025-11-11" />
 
 <title>pwr4exp: Power Analysis for Experimental Designs</title>
 
@@ -50,8 +50,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +63,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -340,8 +341,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">pwr4exp: Power Analysis for Experimental
 Designs</h1>
-<h4 class="author">R Package Version 1.0.0</h4>
-<h4 class="date">2025-03-17</h4>
+<h4 class="author">R Package Version 1.0.1</h4>
+<h4 class="date">2025-11-11</h4>
 
 
 <div id="TOC">
@@ -553,7 +554,7 @@ replicated in LSD. One of:</p></li>
 <ul>
 <li><code>&quot;row&quot;</code>: reuse row blocks</li>
 <li><code>&quot;col&quot;</code>: reuse column blocks</li>
-<li><code>&quot;both&quot;</code>: reuse both row and column blocks</li>
+<li><code>&quot;none&quot;</code>: reuse neither row nor column blocks</li>
 </ul>
 </blockquote>
 <ul>
@@ -910,7 +911,7 @@ against the control, use the contrast vector
 computed as:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">pwr.contrast</span>(crd, <span class="at">which =</span>  <span class="st">&quot;trt&quot;</span>, <span class="at">contrast =</span> <span class="fu">list</span>(<span class="at">trts.vs.ctrl =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)))</span>
 <span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="co">#&gt;                    effect df sig.level power alternative</span></span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="co">#&gt; trts.vs.ctrl 2.187139e-14 28      0.05  0.05   two.sided</span></span></code></pre></div>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="co">#&gt; trts.vs.ctrl 9.992007e-16 28      0.05  0.05   two.sided</span></span></code></pre></div>
 <p><strong>Adjusting for Multiple Comparisons</strong></p>
 <p>In real-world analysis, <strong>P-values</strong> often need
 <strong>adjustment for multiple comparisons (MCP)</strong>. While most
@@ -1019,7 +1020,7 @@ object:</p>
 <span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="co">#&gt; 4    2    2</span></span>
 <span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>rcbd<span class="sc">$</span>deStruct<span class="sc">$</span>formula</span>
 <span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="co">#&gt; ~facA * facB + (1 | block)</span></span>
-<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt; &lt;environment: 0x7fab420bb040&gt;</span></span></code></pre></div>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt; &lt;environment: 0x7fef6902ea90&gt;</span></span></code></pre></div>
 <p>Treatment factors and factor levels can be renamed and relabeled, and
 the model formula can be changed. For example, if interactions are
 removed, marginal means for both factors must be provided instead of
@@ -1088,7 +1089,7 @@ into:</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">designLSD</span>(</span>
 <span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="at">treatments =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
 <span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="at">squares =</span> <span class="dv">4</span>,</span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  <span class="at">reuse =</span> <span class="st">&quot;both&quot;</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  <span class="at">reuse =</span> <span class="st">&quot;none&quot;</span>,</span>
 <span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>  <span class="at">template =</span> <span class="cn">TRUE</span></span>
 <span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>)</span>
 <span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a><span class="co">#&gt; $fixeff</span></span>
@@ -1124,7 +1125,7 @@ guide to make an informed estimate of <code>sigma2</code>.</p>
 <span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  <span class="at">treatments =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>),</span>
 <span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">list</span>(<span class="at">temp =</span> <span class="fu">c</span>(<span class="st">&quot;T1&quot;</span>, <span class="st">&quot;T2&quot;</span>), <span class="at">dosage =</span> <span class="fu">c</span>(<span class="st">&quot;D1&quot;</span>, <span class="st">&quot;D2&quot;</span>)),</span>
 <span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>  <span class="at">squares =</span> <span class="dv">4</span>,</span>
-<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>  <span class="at">reuse =</span> <span class="st">&quot;both&quot;</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>  <span class="at">reuse =</span> <span class="st">&quot;none&quot;</span>,</span>
 <span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>  <span class="at">means =</span> <span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">40</span>, <span class="dv">38</span>, <span class="dv">41</span>),</span>
 <span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a>  <span class="at">vcomp =</span> <span class="fu">c</span>(<span class="dv">11</span>, <span class="dv">2</span>),</span>
 <span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>  <span class="at">sigma2 =</span> <span class="dv">2</span></span>

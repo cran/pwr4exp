@@ -1,6 +1,6 @@
 Package: pwr4exp
 Title: Power Analysis for Research Experiments
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Kai", "Wang", , "kai.wang@usys.ethz.ch", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-6672-1121")),
@@ -23,9 +23,10 @@ LazyData: true
 RoxygenNote: 7.3.2
 Imports: emmeans, MASS, Matrix, methods, nlme, numDeriv
 NeedsCompilation: no
-Packaged: 2025-03-17 10:24:20 UTC; wangkai
-Author: Kai Wang [aut, cre, cph] (<https://orcid.org/0000-0002-6672-1121>),
-  Mutian Niu [aut, cph] (<https://orcid.org/0000-0003-4484-4611>)
+Packaged: 2025-11-11 11:20:28 UTC; wangkai
+Author: Kai Wang [aut, cre, cph] (ORCID:
+    <https://orcid.org/0000-0002-6672-1121>),
+  Mutian Niu [aut, cph] (ORCID: <https://orcid.org/0000-0003-4484-4611>)
 Maintainer: Kai Wang <kai.wang@usys.ethz.ch>
 Repository: CRAN
-Date/Publication: 2025-03-17 10:40:03 UTC
+Date/Publication: 2025-11-11 11:50:02 UTC
